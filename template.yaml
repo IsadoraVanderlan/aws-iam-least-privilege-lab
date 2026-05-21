@@ -2,10 +2,15 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Meu Laboratorio de IAM Least Privilege'
 
 Resources:
+  # ==========================================
+  # 1. USUÁRIOS E PERMISSÕES (ADMIN E AUDITOR)
+  # ==========================================
   AdminUser:
     Type: 'AWS::IAM::User'
     Properties:
       UserName: 'usr-lab-admin'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AdministratorAccess' # Adicionado para dar o acesso admin
 
   ReadOnlyUser:
     Type: 'AWS::IAM::User'
@@ -14,6 +19,9 @@ Resources:
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/ReadOnlyAccess'
 
+  # ==========================================
+  # 2. INFRAESTRUTURA DE DADOS E OPERADOR S3
+  # ==========================================
   LabS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -40,31 +48,12 @@ Resources:
           - Effect: 'Allow'
             Action:
               - 's3:GetObject'
+              - 's3:PutObject' # Adicionado PutObject para o operador conseguir enviar arquivos
             Resource: !Sub '${LabS3Bucket.Arn}/*'
 
-  EC2MonitoringRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      RoleName: 'role-lab-ec2-monitoring'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: 'Allow'
-            Principal:
-              Service:
-                - '://amazonaws.com'
-            Action:
-              - 'sts:AssumeRole'
-      ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy'
-
-  EC2InstanceProfile:
-    Type: 'AWS::IAM::InstanceProfile'
-    Properties:
-      InstanceProfileName: 'instance-profile-lab-ec2-monitoring'
-      Roles:
-        - !Ref EC2MonitoringRole
-
+  # ==========================================
+  # 3. POLÍTICA DE SEGURANÇA GLOBAL (MFA & ROTAÇÃO)
+  # ==========================================
   MfaEnforcementPolicy:
     Type: 'AWS::IAM::Policy'
     Properties:
@@ -82,7 +71,60 @@ Resources:
               - 'iam:ListVirtualMFADevices'
               - 'iam:ListMFADevices'
               - 'iam:ListUsers'
+              - 'iam:GetUser'
             Resource: '*'
             Condition:
-              Bool:
+              BoolIfExists: # Garante o funcionamento mesmo em chamadas CLI sem a chave presente
                 'aws:MultiFactorAuthPresent': 'false'
+
+  # Força a rotação de senhas a cada 90 dias na conta inteira
+  AccountPasswordPolicy:
+    Type: 'AWS::IAM::AccountPasswordPolicy'
+    Properties:
+      MinimumPasswordLength: 14
+      RequireSymbols: true
+      RequireNumbers: true
+      RequireUppercaseCharacters: true
+      RequireLowercaseCharacters: true
+      MaxPasswordAge: 90 # Rotação obrigatória a cada 90 dias
+      PasswordReusePrevention: 5
+
+  # Cria a Access Key inicial para demonstrar o conceito de chaves programáticas
+  S3OperatorAccessKey:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName: !Ref S3OperatorUser
+
+  # ==========================================
+  # 4. ROLES PARA EC2
+  # ==========================================
+  EC2MonitoringRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: 'role-lab-ec2-monitoring'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'ec2.amazonaws.com' # Corrigido o bug do endpoint da AWS
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy'
+
+  EC2InstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      InstanceProfileName: 'instance-profile-lab-ec2-monitoring'
+      Roles:
+        - !Ref EC2MonitoringRole
+
+Outputs:
+  BucketTarget:
+    Description: 'Nome do Bucket criado para os testes'
+    Value: !Ref LabS3Bucket
+  S3OperatorKeyId:
+    Description: 'ID da Access Key criada para o Operador S3'
+    Value: !Ref S3OperatorAccessKey

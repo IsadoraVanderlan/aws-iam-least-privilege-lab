@@ -8,7 +8,7 @@ Escrevi toda a infraestrutura deste laboratório em **AWS CloudFormation (YAML)*
 
 ---
 
-## 🧭 O que este projeto demonstra que eu sei fazer:
+## 🧭 O que este projeto demonstra:
 
 Neste laboratório, apliquei o princípio de **Least Privilege (Menor Privilégio)**. Criando o código bloco por bloco, eu demonstro que domino:
 

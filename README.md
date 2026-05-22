@@ -1,10 +1,11 @@
 # Meu Laboratório Pessoal: AWS IAM Least Privilege 🛡️
 
-<br>
+<p>&nbsp;</p>
 Olá! Este projeto é o resultado prático dos meus estudos focados em Cloud Computing.
 
 Estudando na **Escola da Nuvem**, aprendi os conceitos fundamentais de nuvem e arquitetura, decidi criar este laboratório pessoal para colocar a mão na massa.
-<br> <br>
+
+<p>&nbsp;</p>
 
 ---
 
@@ -19,7 +20,7 @@ Neste laboratório, apliquei o princípio de **Least Privilege (Menor Privilégi
 - **Bloqueio Global por falta de MFA**: Se o admin tentar mexer na conta sem o Segundo Fator de Autenticação (MFA), a AWS bloqueia ele na hora.
 - **IAM Roles para Servidores (EC2)**: A máquina virtual ganha acessos temporários automáticos, eliminando o uso de senhas ou chaves fixas expostas.
 - **Rotação de Senhas**: Uma regra na conta obriga a troca de senhas de todos os usuários a cada 90 dias.
-  <br> <br>
+<p>&nbsp;</p>
 
 ---
 
@@ -40,7 +41,7 @@ Para testar e validar o laboratório, usei o terminal para enviar o código para
    ![Validação no CloudShell](permissoes.png)
 
 5. **Limpando tudo:** Após os testes, usei o CloudFormation para deletar todos os recursos criados de forma limpa e segura, evitando qualquer custo na minha conta.
-<br>
+
 <p>&nbsp;</p>
 
 ---

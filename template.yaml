@@ -10,7 +10,7 @@ Resources:
     Properties:
       UserName: 'usr-lab-admin'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AdministratorAccess' # Adicionado para dar o acesso admin
+        - 'arn:aws:iam::aws:policy/AdministratorAccess'
 
   ReadOnlyUser:
     Type: 'AWS::IAM::User'
@@ -48,11 +48,11 @@ Resources:
           - Effect: 'Allow'
             Action:
               - 's3:GetObject'
-              - 's3:PutObject' # Adicionado PutObject para o operador conseguir enviar arquivos
+              - 's3:PutObject'
             Resource: !Sub '${LabS3Bucket.Arn}/*'
 
   # ==========================================
-  # 3. POLÍTICA DE SEGURANÇA GLOBAL (MFA & ROTAÇÃO)
+  # 3. POLÍTICA DE SEGURANÇA GLOBAL (MFA)
   # ==========================================
   MfaEnforcementPolicy:
     Type: 'AWS::IAM::Policy'
@@ -74,26 +74,8 @@ Resources:
               - 'iam:GetUser'
             Resource: '*'
             Condition:
-              BoolIfExists: # Garante o funcionamento mesmo em chamadas CLI sem a chave presente
+              BoolIfExists:
                 'aws:MultiFactorAuthPresent': 'false'
-
-  # Força a rotação de senhas a cada 90 dias na conta inteira
-  AccountPasswordPolicy:
-    Type: 'AWS::IAM::AccountPasswordPolicy'
-    Properties:
-      MinimumPasswordLength: 14
-      RequireSymbols: true
-      RequireNumbers: true
-      RequireUppercaseCharacters: true
-      RequireLowercaseCharacters: true
-      MaxPasswordAge: 90 # Rotação obrigatória a cada 90 dias
-      PasswordReusePrevention: 5
-
-  # Cria a Access Key inicial para demonstrar o conceito de chaves programáticas
-  S3OperatorAccessKey:
-    Type: 'AWS::IAM::AccessKey'
-    Properties:
-      UserName: !Ref S3OperatorUser
 
   # ==========================================
   # 4. ROLES PARA EC2
@@ -108,7 +90,7 @@ Resources:
           - Effect: 'Allow'
             Principal:
               Service:
-                - 'ec2.amazonaws.com' # Corrigido o bug do endpoint da AWS
+                - 'ec2.amazonaws.com'
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
@@ -125,6 +107,3 @@ Outputs:
   BucketTarget:
     Description: 'Nome do Bucket criado para os testes'
     Value: !Ref LabS3Bucket
-  S3OperatorKeyId:
-    Description: 'ID da Access Key criada para o Operador S3'
-    Value: !Ref S3OperatorAccessKey

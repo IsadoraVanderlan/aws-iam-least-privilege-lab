@@ -37,7 +37,7 @@ Para testar e validar o laboratório, usei o terminal para enviar o código para
 
 3. **Verificando os Usuários:** Após o término da automação, a AWS criou com sucesso todos os perfis de acesso direto no painel do IAM conforme planejado.
    ![Usuários Criados no IAM](user.png)
-   </br>
+   &nbsp;
 
 4. **Testando o bloqueio do Operador S3:** Entrei com o usuário operador e tentei listar outros arquivos da conta. A AWS barrou e deu o erro de **Acesso Negado (AccessDenied)**, provando que a trava que criei funcionou. Ele só conseguiu ver o bucket do laboratório.
    ![Validação no CloudShell](permissoes.png)

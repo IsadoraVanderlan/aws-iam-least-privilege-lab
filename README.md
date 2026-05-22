@@ -28,16 +28,20 @@ Neste laboratório, apliquei o princípio de **Least Privilege (Menor Privilégi
 Para testar e validar o laboratório, usei o terminal para enviar o código para a AWS e testar os acessos dos usuários:
 
 1. **Subindo o laboratório:** Enviei o arquivo `template.yaml` para o serviço CloudFormation da AWS, que criou todos os usuários e regras automaticamente em poucos minutos.
-   ![Stack Concluída com Sucesso](IAM-gif.gif) <br>
+   ![Stack Concluída com Sucesso](IAM-gif.gif)
+   <br>
 
 2. **Testando o funcionamento no Terminal:** Abri o CloudShell e listei o bucket criado pelo projeto para garantir que a estrutura estava pronta e respondendo corretamente via comandos CLI.
-   ![Validação no CloudShell](pilha.png) <br>
+   ![Validação no CloudShell](pilha.png)
+   <br>
 
 3. **Verificando os Usuários:** Após o término da automação, a AWS criou com sucesso todos os perfis de acesso direto no painel do IAM conforme planejado.
-   ![Usuários Criados no IAM](user.png) <br>
+   ![Usuários Criados no IAM](user.png)
+   <br>
 
 4. **Testando o bloqueio do Operador S3:** Entrei com o usuário operador e tentei listar outros arquivos da conta. A AWS barrou e deu o erro de **Acesso Negado (AccessDenied)**, provando que a trava que criei funcionou. Ele só conseguiu ver o bucket do laboratório.
-   ![Validação no CloudShell](permissoes.png) <br>
+   ![Validação no CloudShell](permissoes.png)
+   <br>
 
 5. **Limpando tudo:** Após os testes, usei o CloudFormation para deletar todos os recursos criados de forma limpa e segura, evitando qualquer custo na minha conta.
    <br> <br>
